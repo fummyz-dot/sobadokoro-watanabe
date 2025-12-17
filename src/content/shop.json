@@ -7,6 +7,25 @@
   "hours": "11:30–14:30 / 17:30–21:00",
   "closed": "水曜",
   "access": "○○線 ○○駅 徒歩3分（A2出口）",
+
+  "news": [
+    "【12/29】昼のみ営業いたします。",
+    "新そば入荷しました（数量限定）。"
+  ],
+
+  "notes": [
+    "現金・各種キャッシュレス可",
+    "全席禁煙",
+    "席数：20席（カウンターあり）"
+  ],
+
+  "mapEmbedUrl": "https://www.google.com/maps?q=東京都千代田区&output=embed",
+
+  "photoCredits": [
+    "Hero photo: Unsplash",
+    "Gallery photos: Unsplash / Pexels"
+  ],
+
   "footer": "© 蕎麦処 わたなべ"
 }
 
