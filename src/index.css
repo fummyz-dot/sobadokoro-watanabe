@@ -1,68 +1,80 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* そば屋：温かい和紙トーン（白ベタ禁止） */
+:root{
+  color-scheme: light;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* まず無難な和文ゴシック（後で明朝追加してもOK） */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+
+  --ink: #15120f;          /* 墨 */
+  --paper: #fbf4e6;        /* 生成り */
+  --paper2: #f2eadc;       /* 霞 */
+  --warm: rgba(205, 164, 98, .18); /* ぬくもり光 */
+  --line: rgba(21,18,15,.14);
+  --shadow: 0 18px 50px rgba(21,18,15,.12);
+  --shadow2: 0 10px 26px rgba(21,18,15,.10);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+html, body{ height: 100%; }
 
-body {
+body{
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  color: var(--ink);
+
+  /* Vite初期の flex center は絶対に消す（レイアウト崩壊の元） */
+  display: block;
+
+  /* “ぬくもり”背景：和紙＋光だまり */
+  background:
+    radial-gradient(1px 1px at 12px 18px, rgba(21,18,15,.07) 0, rgba(21,18,15,0) 2px) 0 0/22px 22px,
+    radial-gradient(1px 1px at 6px 9px, rgba(21,18,15,.05) 0, rgba(21,18,15,0) 2px) 0 0/18px 18px,
+    radial-gradient(900px 420px at 14% -10%, var(--warm), rgba(205,164,98,0) 60%),
+    radial-gradient(900px 520px at 85% 8%, rgba(255,255,255,.60), rgba(255,255,255,0) 55%),
+    radial-gradient(900px 620px at 50% 100%, rgba(120,90,40,.10), rgba(120,90,40,0) 62%),
+    linear-gradient(180deg, var(--paper), var(--paper2));
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+a{ color: inherit; text-decoration: none; }
+img{ display:block; max-width:100%; height:auto; }
+
+/* リッチ用ユーティリティ（App.jsxで使ってる前提） */
+.rich-paper{
+  background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.58));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow2);
+  backdrop-filter: blur(8px);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.rich-frame{
+  border: 1px solid rgba(21,18,15,.20);
+  box-shadow: var(--shadow);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.hero-mist{ position: relative; }
+.hero-mist::after{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(900px 380px at 30% 20%, rgba(255,255,255,.22), rgba(255,255,255,0) 60%),
+    radial-gradient(760px 460px at 70% 10%, rgba(205,164,98,.18), rgba(205,164,98,0) 55%);
+  pointer-events:none;
 }
+
+.rich-primary{
+  background: #15120f;
+  color: #fbf4e6;
+  border: 1px solid rgba(21,18,15,.65);
+  box-shadow: 0 10px 26px rgba(21,18,15,.18);
+}
+.rich-primary:hover{ background:#0f0c0a; }
+
+.rich-ghost{
+  background: rgba(255,255,255,.50);
+  border: 1px solid rgba(21,18,15,.20);
+  backdrop-filter: blur(8px);
+}
+.rich-ghost:hover{ background: rgba(255,255,255,.70); }

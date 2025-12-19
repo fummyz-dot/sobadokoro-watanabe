@@ -1,12 +1,11 @@
+import { useMemo, useState } from "react"
 import shop from "./content/shop.json"
 import menu from "./content/menu.json"
 
 function SectionTitle({ children, sub }) {
   return (
     <div className="mb-8">
-      {sub ? (
-        <p className="text-xs tracking-[0.2em] text-stone-600">{sub}</p>
-      ) : null}
+      {sub ? <p className="text-xs tracking-[0.22em] text-stone-600">{sub}</p> : null}
       <h3 className="mt-2 text-2xl md:text-3xl font-semibold text-stone-900">
         {children}
       </h3>
@@ -40,254 +39,403 @@ function Badge({ children }) {
   )
 }
 
-export default function App() {
-  const base = import.meta.env.BASE_URL || "/"
-  const heroUrl = `${base}images/hero.png`
-
-  const gallery = [
-    { src: `${base}images/interior.png`, alt: "店内" },
-    { src: `${base}images/exterior.png`, alt: "外観" },
-    { src: `${base}images/food.png`, alt: "一品" },
-  ]
-
-  const tel = shop.tel || ""
-  const telLabel = shop.telLabel || tel || "電話"
-
-  // 予約導線（あれば使う：無ければtel）
-  const reserveHref = shop.reserveUrl || (tel ? `tel:${tel}` : "#info")
-  const reserveLabel = shop.reserveUrl ? "予約する" : `電話する（${telLabel}）`
-
+function NavItem({ active, onClick, children }) {
   return (
-    <div className="min-h-screen bg-amber-50 text-stone-800">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-stone-300/80 bg-amber-50/90 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-          <a href="#top" className="flex items-baseline gap-3">
-            <h1 className="text-lg md:text-xl font-semibold tracking-wide text-stone-900">
-              {shop.name || "蕎麦処 わたなべ"}
-            </h1>
-            <span className="hidden md:inline text-xs tracking-[0.25em] text-stone-600">
-              SOBA
-            </span>
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "w-full text-left px-3 py-2 text-sm transition",
+        active
+          ? "bg-stone-900 text-amber-50"
+          : "text-stone-700 hover:bg-white/60 hover:text-stone-900",
+        "border border-transparent",
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  )
+}
+
+function SideNav({ page, setPage, reserveHref, telLabel }) {
+  return (
+    <aside className="hidden lg:block fixed left-6 top-1/2 -translate-y-1/2 z-50 w-60">
+      <div className="rich-paper p-5">
+        <div className="mt-2 text-sm font-semibold text-stone-900">{shop.name || "蕎麦処 わたなべ"}</div>
+
+        <div className="mt-5 space-y-2">
+          <NavItem active={page === "news"} onClick={() => setPage("news")}>お知らせ</NavItem>
+          <NavItem active={page === "concept"} onClick={() => setPage("concept")}>
+            蕎麦処 わたなべのこだわり
+          </NavItem>
+          <NavItem active={page === "menu"} onClick={() => setPage("menu")}>メニュー</NavItem>
+          <NavItem active={page === "contact"} onClick={() => setPage("contact")}>お問い合わせ</NavItem>
+        </div>
+
+        <div className="mt-5 grid gap-2">
+          <a
+            href={reserveHref}
+            className="rich-primary inline-flex items-center justify-center px-4 py-2 text-xs tracking-wide"
+          >
+            {shop.reserveUrl ? "予約する" : "電話する"}
           </a>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm text-stone-700">
-            <a href="#menu" className="hover:text-stone-900">お品書き</a>
-            <a href="#news" className="hover:text-stone-900">お知らせ</a>
-            <a href="#concept" className="hover:text-stone-900">こだわり</a>
-            <a href="#info" className="hover:text-stone-900">店舗情報</a>
-            <a
-              href={reserveHref}
-              className="ml-2 inline-flex items-center border border-stone-900 bg-stone-900 px-4 py-2 text-xs tracking-wide text-amber-50 hover:bg-stone-800"
-            >
-              {shop.reserveUrl ? "予約" : "電話"}
-            </a>
-          </nav>
+          <button
+            type="button"
+            onClick={() => setPage("contact")}
+            className="rich-ghost inline-flex items-center justify-center px-4 py-2 text-xs tracking-wide text-stone-800"
+          >
+            {telLabel ? `電話：${telLabel}` : "店舗情報"}
+          </button>
         </div>
-      </header>
+      </div>
+    </aside>
+  )
+}
 
-      {/* Hero */}
-      <section id="top" className="relative">
-        <div
-          className="h-[72vh] min-h-[520px] bg-stone-900"
-          style={{
-            backgroundImage: `url(${heroUrl})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-amber-50" />
-
-        <div className="absolute inset-x-0 top-0">
-          <div className="mx-auto max-w-6xl px-6 pt-16 md:pt-20 text-amber-50">
-            <p className="text-xs tracking-[0.3em] opacity-90">SOBA · TEMPURA · SAKE</p>
-            <h2 className="mt-4 text-4xl md:text-6xl font-semibold leading-tight">
-              {shop.catch || "打ちたて、ゆでたて。\n香りで食べる蕎麦。"}
-            </h2>
-
-            <div className="mt-6 flex flex-wrap gap-2 text-amber-50/90">
-              {shop.hours ? <Badge>営業時間：{shop.hours}</Badge> : null}
-              {shop.closed ? <Badge>定休日：{shop.closed}</Badge> : null}
-              {shop.access ? <Badge>{shop.access}</Badge> : null}
-            </div>
-
-            <div className="mt-8 flex gap-3">
-              <a
-                href={reserveHref}
-                className="inline-flex items-center justify-center border border-amber-50 bg-amber-50 px-6 py-3 text-sm text-stone-900 hover:bg-amber-100"
-              >
-                {reserveLabel}
-              </a>
-              <a
-                href="#menu"
-                className="inline-flex items-center justify-center border border-amber-50/70 px-6 py-3 text-sm text-amber-50 hover:bg-white/10"
-              >
-                お品書きを見る
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main */}
-      <main className="mx-auto max-w-6xl px-6">
-        {/* Menu */}
-        <section id="menu" className="py-20">
-          <SectionTitle sub="MENU">お品書き</SectionTitle>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="border border-stone-300/80 bg-amber-50 p-6">
-              <h4 className="text-sm tracking-[0.2em] text-stone-600">昼の部</h4>
-              <div className="mt-4">
-                <MenuList items={menu.lunch} />
-              </div>
-            </div>
-
-            <div className="border border-stone-300/80 bg-amber-50 p-6">
-              <h4 className="text-sm tracking-[0.2em] text-stone-600">夜の部</h4>
-              <div className="mt-4">
-                <MenuList items={menu.dinner} />
-              </div>
-            </div>
-          </div>
-
-          <p className="mt-8 text-xs text-stone-600">
-            ※ 価格は税込表記です（例）。仕入れ状況により変更する場合があります。
-          </p>
-        </section>
-
-        {/* Gallery */}
-        <section className="pb-20">
-          <SectionTitle sub="GALLERY">店の空気</SectionTitle>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {gallery.map((g) => (
-              <div key={g.src} className="border border-stone-300/80 bg-white overflow-hidden">
-                <img
-                  src={g.src}
-                  alt={g.alt}
-                  className="h-56 w-full object-cover"
-                  loading="lazy"
-                />
-                <div className="px-4 py-3 text-xs tracking-[0.2em] text-stone-600">
-                  {g.alt}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* News */}
-        <section id="news" className="pb-20">
-          <SectionTitle sub="NEWS">お知らせ</SectionTitle>
-
-          <div className="border border-stone-300/80 bg-amber-50 p-6">
-            {Array.isArray(shop.news) && shop.news.length ? (
-              <ul className="space-y-2 text-sm text-stone-700">
-                {shop.news.map((n) => (
-                  <li key={n} className="leading-relaxed">・{n}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-stone-600">現在お知らせはありません。</p>
-            )}
-          </div>
-        </section>
-
-        {/* Concept */}
-        <section id="concept" className="pb-20">
-          <SectionTitle sub="CONCEPT">こだわり</SectionTitle>
-
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="border border-stone-300/80 bg-white p-6">
-              <h4 className="text-sm tracking-[0.2em] text-stone-600">蕎麦</h4>
-              <p className="mt-4 text-sm leading-relaxed text-stone-700">
-                その日の気温・湿度に合わせて加水を調整し、香りと喉ごしを両立。
-                打ちたての風味を、まずは「せいろ」で。
-              </p>
-            </div>
-            <div className="border border-stone-300/80 bg-white p-6">
-              <h4 className="text-sm tracking-[0.2em] text-stone-600">つゆ・蕎麦前</h4>
-              <p className="mt-4 text-sm leading-relaxed text-stone-700">
-                鰹と宗田節を主体に、蕎麦の香りを引き立てる辛口のつゆ。
-                夜は蕎麦前と日本酒もご用意しています。
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Info */}
-        <section id="info" className="pb-24">
-          <SectionTitle sub="INFO">店舗情報</SectionTitle>
-
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="border border-stone-300/80 bg-amber-50 p-6 text-sm text-stone-700 space-y-2">
-              {shop.address ? <p><span className="text-stone-900">住所：</span>{shop.address}</p> : null}
-              {shop.hours ? <p><span className="text-stone-900">営業時間：</span>{shop.hours}</p> : null}
-              {shop.closed ? <p><span className="text-stone-900">定休日：</span>{shop.closed}</p> : null}
-              {shop.access ? <p><span className="text-stone-900">アクセス：</span>{shop.access}</p> : null}
-              {tel ? (
-                <p>
-                  <span className="text-stone-900">電話：</span>
-                  <a className="underline underline-offset-2" href={`tel:${tel}`}>{telLabel}</a>
-                </p>
-              ) : null}
-
-              {Array.isArray(shop.notes) && shop.notes.length ? (
-                <div className="pt-3">
-                  <div className="text-xs tracking-[0.2em] text-stone-600">NOTES</div>
-                  <ul className="mt-2 space-y-1 text-xs text-stone-600">
-                    {shop.notes.map((x) => <li key={x}>・{x}</li>)}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-
-            <div className="border border-stone-300/80 bg-white overflow-hidden">
-              <iframe
-                title="map"
-                src={
-                  shop.mapEmbedUrl ||
-                  "https://www.google.com/maps?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA&output=embed"
-                }
-                width="100%"
-                height="360"
-                loading="lazy"
-              />
-            </div>
-          </div>
-
-          {/* photo credits (optional) */}
-          {Array.isArray(shop.photoCredits) && shop.photoCredits.length ? (
-            <div className="mt-10 text-xs text-stone-500">
-              <div className="text-[11px] tracking-[0.2em] text-stone-500">PHOTO CREDITS</div>
-              <ul className="mt-2 space-y-1">
-                {shop.photoCredits.map((c) => (
-                  <li key={c} className="leading-relaxed">{c}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-stone-300/80">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-center text-xs text-stone-600">
-          {shop.footer || "© 蕎麦処 わたなべ"}
-        </div>
-      </footer>
-
-      {/* Mobile fixed CTA */}
-      {tel ? (
-        <a
-          href={`tel:${tel}`}
-          className="md:hidden fixed bottom-4 left-4 right-4 z-50 text-center border border-stone-900 bg-amber-50/95 py-3 text-sm text-stone-900 backdrop-blur hover:bg-amber-100"
-        >
-          電話する（{telLabel}）
-        </a>
-      ) : null}
+/** ページ切替時の“さりげない高級感” */
+function PageShell({ children }) {
+  return (
+    <div className="animate-[fadeIn_.28s_ease-out]">
+      {children}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
 
+/** メイン：初期は写真だけ（exterior.pngのみ） */
+function HomeHero({ heroUrl }) {
+  return (
+    <div className="rich-frame overflow-hidden">
+      <div
+        className="h-[78vh] min-h-[620px] hero-mist"
+        style={{
+          backgroundImage: `url(${heroUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+    </div>
+  )
+}
+
+function NewsPage({ base }) {
+  return (
+    <PageShell>
+      <SectionTitle sub="NEWS">お知らせ</SectionTitle>
+       <div className="mb-10 rich-frame overflow-hidden">
+        <img
+          src={`${base}images/interior.png`}
+          alt="店内"
+          className="w-full h-[220px] md:h-[280px] object-cover"
+          loading="lazy"
+        />
+        <div className="px-4 py-3 text-xs tracking-[0.2em] text-stone-600 bg-white/60">
+          店内
+        </div>
+      </div>
+      <div className="rich-paper p-7">
+        {Array.isArray(shop.news) && shop.news.length ? (
+          <ul className="space-y-2 text-sm text-stone-700">
+            {shop.news.map((n) => (
+              <li key={n} className="leading-relaxed">・{n}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-stone-600">現在お知らせはありません。</p>
+        )}
+      </div>
+    </PageShell>
+  )
+}
+
+function ConceptPage({ base }) {
+  return (
+    <PageShell>
+      <SectionTitle sub="CONCEPT">蕎麦処 わたなべのこだわり</SectionTitle>
+ 		<div className="mb-10 rich-frame overflow-hidden">
+        <img
+          src={`${base}images/soba.jpg`}
+          alt="かけ蕎麦"
+          className="w-full h-[360px] object-cover [object-position:50%_68%]"
+          loading="lazy"
+        />
+        <div className="px-4 py-3 text-xs tracking-[0.2em] text-stone-600 bg-white/60">
+          かけ蕎麦
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-10">
+        <div className="rich-paper p-7">
+          <h4 className="text-sm tracking-[0.2em] text-stone-600">蕎麦</h4>
+          <p className="mt-4 text-sm leading-relaxed text-stone-700">
+            その日の気温・湿度に合わせて加水を調整し、香りと喉ごしを両立。
+            打ちたての風味を、まずは「せいろ」で。
+          </p>
+        </div>
+
+        <div className="rich-paper p-7">
+          <h4 className="text-sm tracking-[0.2em] text-stone-600">つゆ・蕎麦前</h4>
+          <p className="mt-4 text-sm leading-relaxed text-stone-700">
+            鰹と宗田節を主体に、蕎麦の香りを引き立てる辛口のつゆ。
+            夜は蕎麦前と日本酒もご用意しています。
+          </p>
+        </div>
+      </div>
+    </PageShell>
+  )
+}
+
+function MenuPage({ base }) {
+  const foodUrl = `${base}images/food.png`
+  const kamoUrl = `${base}images/kamonan.jpg` 
+
+  return (
+    <PageShell>
+      <SectionTitle sub="MENU">メニュー</SectionTitle>
+   {/* 写真を横に2枚（スマホは縦） */}
+      <div className="mb-10 grid gap-4 md:grid-cols-2">
+        <div className="rich-frame overflow-hidden">
+          <img
+            src={foodUrl}
+            alt="天ぷら蕎麦"
+            className="w-[400px] h-[460px] object-cover"
+            loading="lazy"
+          />
+          <div className="px-4 py-3 text-xs tracking-[0.2em] text-stone-600 bg-white/60">
+            天ぷら蕎麦
+          </div>
+        </div>
+
+        <div className="rich-frame overflow-hidden">
+          <img
+            src={kamoUrl}
+            alt="鴨南蛮"
+            className="w-[400px] h-[460px] object-cover"
+            loading="lazy"
+          />
+          <div className="px-4 py-3 text-xs tracking-[0.2em] text-stone-600 bg-white/60">
+            鴨南蛮
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-12">
+        <div className="rich-paper p-7">
+          <h4 className="text-sm tracking-[0.2em] text-stone-600">昼の部</h4>
+          <div className="mt-5">
+            <MenuList items={menu.lunch} />
+          </div>
+        </div>
+
+        <div className="rich-paper p-7">
+          <h4 className="text-sm tracking-[0.2em] text-stone-600">夜の部</h4>
+          <div className="mt-5">
+            <MenuList items={menu.dinner} />
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-8 text-xs text-stone-600">
+        ※ 価格は税込表記です（例）。仕入れ状況により変更する場合があります。
+      </p>
+    </PageShell>
+  )
+}
+
+function ContactPage({ tel, telLabel, googleMapUrl }) {
+  return (
+    <PageShell>
+      <SectionTitle sub="CONTACT">お問い合わせ</SectionTitle>
+
+      <div className="grid md:grid-cols-2 gap-10">
+        <div className="rich-paper p-7 text-sm text-stone-700 space-y-2">
+          {shop.address ? <p><span className="text-stone-900">住所：</span>{shop.address}</p> : null}
+          {shop.hours ? <p><span className="text-stone-900">営業時間：</span>{shop.hours}</p> : null}
+          {shop.closed ? <p><span className="text-stone-900">定休日：</span>{shop.closed}</p> : null}
+          {shop.access ? <p><span className="text-stone-900">アクセス：</span>{shop.access}</p> : null}
+
+          {telLabel ? (
+            <p>
+              <span className="text-stone-900">電話：</span>
+              <a className="underline underline-offset-2" href={`tel:${tel}`}>{telLabel}</a>
+            </p>
+          ) : null}
+
+          {Array.isArray(shop.notes) && shop.notes.length ? (
+            <div className="pt-4">
+              <div className="text-xs tracking-[0.2em] text-stone-600">NOTES</div>
+              <ul className="mt-2 space-y-1 text-xs text-stone-600">
+                {shop.notes.map((x) => <li key={x}>・{x}</li>)}
+              </ul>
+            </div>
+          ) : null}
+
+          <div className="pt-4 flex flex-wrap gap-2">
+            {googleMapUrl ? (
+              <a
+                href={googleMapUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rich-ghost inline-flex items-center justify-center px-4 py-2 text-xs text-stone-800"
+              >
+                Googleマップで開く
+              </a>
+            ) : null}
+            {tel ? (
+              <a
+                href={`tel:${tel}`}
+                className="rich-primary inline-flex items-center justify-center px-4 py-2 text-xs"
+              >
+                電話する
+              </a>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="rich-paper overflow-hidden">
+          <iframe
+            title="map"
+            src={
+              shop.mapEmbedUrl ||
+              "https://www.google.com/maps?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA&output=embed"
+            }
+            width="100%"
+            height="420"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </PageShell>
+  )
+}
+
+export default function App() {
+  const base = import.meta.env.BASE_URL || "/"
+
+  // 初期メイン：exterior.pngのみ（テキスト無し）
+  const heroUrl = `${base}images/exterior.png`
+
+  // ナビクリックで切り替わるページ状態
+  const [page, setPage] = useState("home")
+
+  const tel = shop.tel || ""
+  const telLabel = shop.telLabel || tel || ""
+
+  const reserveHref = shop.reserveUrl || (tel ? `tel:${tel}` : "#")
+  const googleMapUrl =
+    shop.googleMapUrl ||
+    (shop.mapEmbedUrl ? shop.mapEmbedUrl.replace("&output=embed", "") : "")
+
+  // モバイル用：下部バー（SPA切替）
+  const MobileBar = () => (
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-stone-300 bg-amber-50/90 backdrop-blur">
+      <div className="mx-auto max-w-6xl px-4 py-3 grid grid-cols-4 gap-2">
+        <button
+          type="button"
+          onClick={() => setPage("news")}
+          className="text-center border border-stone-300 bg-white py-2 text-xs text-stone-800"
+        >
+          お知らせ
+        </button>
+        <button
+          type="button"
+          onClick={() => setPage("concept")}
+          className="text-center border border-stone-300 bg-white py-2 text-xs text-stone-800"
+        >
+          こだわり
+        </button>
+        <button
+          type="button"
+          onClick={() => setPage("menu")}
+          className="text-center border border-stone-300 bg-white py-2 text-xs text-stone-800"
+        >
+          メニュー
+        </button>
+        <button
+          type="button"
+          onClick={() => setPage("contact")}
+          className="text-center border border-stone-900 bg-stone-900 py-2 text-xs text-amber-50"
+        >
+          問合せ
+        </button>
+      </div>
+    </div>
+  )
+
+  // Header（モバイル上部：店名だけ）
+  const MobileHeader = () => (
+    <header className="lg:hidden sticky top-0 z-40 border-b border-stone-300/80 bg-amber-50/85 backdrop-blur">
+      <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setPage("home")}
+          className="text-sm font-semibold tracking-wide text-stone-900"
+        >
+          {shop.name || "蕎麦処 わたなべ"}
+        </button>
+        {tel ? (
+          <a
+            href={`tel:${tel}`}
+            className="inline-flex items-center border border-stone-900 bg-stone-900 px-4 py-2 text-xs tracking-wide text-amber-50 hover:bg-stone-800"
+          >
+            電話
+          </a>
+        ) : null}
+      </div>
+    </header>
+  )
+
+  return (
+    <div className="min-h-screen text-stone-800">
+      <SideNav
+        page={page}
+        setPage={setPage}
+        reserveHref={reserveHref}
+        telLabel={telLabel}
+      />
+
+      <MobileHeader />
+
+      {/* メイン領域：左ナビ分の余白を確保 */}
+      <main className="mx-auto max-w-6xl px-6 lg:pl-64 pt-8 pb-24 lg:pb-12">
+        {page === "home" ? (
+          <HomeHero heroUrl={heroUrl} />
+        ) : null}
+
+        {page === "news" ? <NewsPage base={base} /> : null}
+        {page === "concept" ? <ConceptPage base={base} /> : null}
+        {page === "menu" ? <MenuPage base={base} /> : null}
+        {page === "contact" ? (
+          <ContactPage tel={tel} telLabel={telLabel} googleMapUrl={googleMapUrl} />
+        ) : null}
+
+        {/* home 以外の時だけ「戻る」を置く（上品に） */}
+        {page !== "home" ? (
+          <div className="mt-10">
+            <button
+              type="button"
+              onClick={() => setPage("home")}
+              className="rich-ghost inline-flex items-center justify-center px-5 py-3 text-sm text-stone-800"
+            >
+              外観写真に戻る
+            </button>
+          </div>
+        ) : null}
+
+        {/* homeの時は余計な情報ゼロ、ただ写真のみ */}
+      </main>
+
+      <footer className="border-t border-stone-300/80 pb-20 lg:pb-0">
+        <div className="mx-auto max-w-6xl px-6 py-8 text-center text-xs text-stone-600 lg:pl-64">
+          {shop.footer || "© 蕎麦処 わたなべ"}
+        </div>
+      </footer>
+
+      <MobileBar />
+    </div>
+  )
+}

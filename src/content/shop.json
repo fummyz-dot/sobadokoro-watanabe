@@ -1,8 +1,11 @@
 {
   "name": "蕎麦処 わたなべ",
-  "catch": "打ちたて、ゆでたて。香りで食べる蕎麦。",
+  "catch": "打ちたて、ゆでたて。\n香りで食べる蕎麦。",
+  "heroSub": "出汁の輪郭、蕎麦の甘み、天ぷらの軽さ。\n肩の力を抜いて、ゆっくりどうぞ。",
+
   "tel": "0300000000",
   "telLabel": "03-0000-0000",
+
   "address": "東京都○○区○○ 1-2-3",
   "hours": "11:30–14:30 / 17:30–21:00",
   "closed": "水曜",
@@ -16,16 +19,16 @@
   "notes": [
     "現金・各種キャッシュレス可",
     "全席禁煙",
-    "席数：20席（カウンターあり）"
+    "席数：20席（カウンターあり）",
+    "混雑時はお待ちいただく場合があります"
   ],
 
+  "googleMapUrl": "https://www.google.com/maps?q=東京都千代田区",
   "mapEmbedUrl": "https://www.google.com/maps?q=東京都千代田区&output=embed",
 
   "photoCredits": [
-    "Hero photo: Unsplash",
-    "Gallery photos: Unsplash / Pexels"
+    "Hero / Gallery photos: Unsplash / Pexels"
   ],
 
   "footer": "© 蕎麦処 わたなべ"
 }
-
